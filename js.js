@@ -82,7 +82,20 @@ function creatingLogIn(accounts) {
 creatingLogIn(accounts);
 
 function renderingCurrentBalance(movements) {
-  labelBalance.innerHTML = `${movements.reduce((acc, val) => {return acc + val})}₽`;
+  const currentBalance = `${movements.reduce((acc, val) => acc + val)}₽`;
+  let summaryValueIn = 0;
+  let summaryValueOut = 0;
+  movements.forEach((val) => {
+    if (val > 0) {
+      summaryValueIn += val;
+    } else {
+      summaryValueOut += -val;
+    }
+  });
+  labelBalance.innerHTML = currentBalance;
+  labelSumInterest.innerHTML = currentBalance;
+  labelSumIn.innerHTML = `${summaryValueIn}₽`;
+  labelSumOut.innerHTML = `${summaryValueOut}₽`;
 }
 
 renderingCurrentBalance(account1.movements);
