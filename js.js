@@ -69,3 +69,20 @@ function renderingMovements(movements) {
 }
 
 renderingMovements(account1.movements);
+
+function creatingLogIn(accounts) {
+  accounts.forEach((val) => {
+    val.logIn = val.owner
+      .split(" ")
+      .map((val) => val.slice(0, 1).toLocaleLowerCase())
+      .join("");
+  });
+}
+
+creatingLogIn(accounts);
+
+function renderingCurrentBalance(movements) {
+  labelBalance.innerHTML = `${movements.reduce((acc, val) => {return acc + val})}₽`;
+}
+
+renderingCurrentBalance(account1.movements);
