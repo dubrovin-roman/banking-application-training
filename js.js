@@ -148,6 +148,15 @@ btnClose.addEventListener("click", (ev) => {
     accounts.splice(index, 1);
     inputCloseUsername.value = inputClosePin.value = "";
     containerApp.style.opacity = "0";
-    console.log(accounts);
+  }
+});
+
+btnLoan.addEventListener("click", (ev) => {
+  ev.preventDefault();
+  const loanAmount = Number(inputLoanAmount.value);
+  if (loanAmount > 0) {
+    selectedAccount.movements.push(loanAmount);
+    inputLoanAmount.value = "";
+    renderingUi(selectedAccount);
   }
 });
