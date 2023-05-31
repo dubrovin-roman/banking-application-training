@@ -176,3 +176,9 @@ btnSort.addEventListener("click", (ev) => {
   renderingMovements(selectedAccount.movements, !sorted);
   sorted = !sorted;
 });
+
+labelBalance.addEventListener("click", () => {
+  Array.from(document.querySelectorAll(".movements__value"), (val) => {
+    return (val.innerText = val.textContent.replace("₽", "RUB"));
+  });
+});
