@@ -52,6 +52,17 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
+function creatingLogIn(accounts) {
+  accounts.forEach((val) => {
+    val.logIn = val.owner
+      .split(" ")
+      .map((val) => val.slice(0, 1).toLocaleLowerCase())
+      .join("");
+  });
+}
+
+creatingLogIn(accounts);
+
 function renderingMovements(movements) {
   containerMovements.innerHTML = "";
   movements.forEach(function (val, i) {
@@ -68,32 +79,26 @@ function renderingMovements(movements) {
   });
 }
 
-function creatingLogIn(accounts) {
-  accounts.forEach((val) => {
-    val.logIn = val.owner
-      .split(" ")
-      .map((val) => val.slice(0, 1).toLocaleLowerCase())
-      .join("");
-  });
-}
-
-creatingLogIn(accounts);
-
-function renderingCurrentBalance(movements) {
-  const currentBalance = `${movements.reduce((acc, val) => acc + val)}₽`;
+function renderingCurrentBalance(account) {
+  account.balance = account.movements.reduce((acc, val) => acc + val);
   let summaryValueIn = 0;
   let summaryValueOut = 0;
-  movements.forEach((val) => {
+  account.movements.forEach((val) => {
     if (val > 0) {
       summaryValueIn += val;
     } else {
       summaryValueOut += -val;
     }
   });
-  labelBalance.innerHTML = currentBalance;
-  labelSumInterest.innerHTML = currentBalance;
+  labelBalance.innerHTML = `${account.balance}₽`;
+  labelSumInterest.innerHTML = `${account.balance}₽`;
   labelSumIn.innerHTML = `${summaryValueIn}₽`;
   labelSumOut.innerHTML = `${summaryValueOut}₽`;
+}
+
+function renderingUi(account) {
+  renderingMovements(account.movements);
+  renderingCurrentBalance(account);
 }
 
 let selectedAccount;
@@ -106,9 +111,27 @@ btnLogin.addEventListener("click", (ev) => {
     containerApp.style.opacity = "100";
     inputLoginUsername.value = "";
     inputLoginPin.value = "";
-    renderingMovements(selectedAccount.movements);
-    renderingCurrentBalance(selectedAccount.movements);
+    renderingUi(selectedAccount);
   } else {
     containerApp.style.opacity = "0";
+  }
+});
+
+btnTransfer.addEventListener("click", (ev) => {
+  ev.preventDefault();
+  const accountForTransfer = accounts.find(
+    (account) => account.logIn === inputTransferTo.value
+  );
+  const amount = inputTransferAmount.value;
+  if (
+    accountForTransfer &&
+    amount > 0 &&
+    selectedAccount.balance >= amount &&
+    accountForTransfer.logIn !== selectedAccount.logIn
+  ) {
+    selectedAccount.movements.push(-amount);
+    accountForTransfer.movements.push(Number(amount));
+    inputTransferTo.value = inputTransferAmount.value = "";
+    renderingUi(selectedAccount);
   }
 });
