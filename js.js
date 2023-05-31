@@ -63,9 +63,10 @@ function creatingLogIn(accounts) {
 
 creatingLogIn(accounts);
 
-function renderingMovements(movements) {
+function renderingMovements(movements, isSorted = false) {
   containerMovements.innerHTML = "";
-  movements.forEach(function (val, i) {
+  const movs = isSorted ? movements.slice().sort((a, b) => a - b) : movements;
+  movs.forEach(function (val, i) {
     const type = val > 0 ? "deposit" : "withdrawal";
     const typeDesc = val > 0 ? "зачисление" : "снятие";
     const element = `<div class="movements__row">
@@ -167,3 +168,11 @@ const allBalance = accounts
   .reduce((acc, val) => acc + val, 0);
 
 console.log(allBalance);
+
+let sorted = false;
+btnSort.addEventListener("click", (ev) => {
+  ev.preventDefault();
+  console.log("click");
+  renderingMovements(selectedAccount.movements, !sorted);
+  sorted = !sorted;
+});
