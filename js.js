@@ -160,3 +160,10 @@ btnLoan.addEventListener("click", (ev) => {
     renderingUi(selectedAccount);
   }
 });
+
+const allBalance = accounts
+  .map((account) => account.movements)
+  .flat()
+  .reduce((acc, val) => acc + val, 0);
+
+console.log(allBalance);
