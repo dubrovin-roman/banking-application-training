@@ -122,7 +122,7 @@ btnTransfer.addEventListener("click", (ev) => {
   const accountForTransfer = accounts.find(
     (account) => account.logIn === inputTransferTo.value
   );
-  const amount = inputTransferAmount.value;
+  const amount = Number(inputTransferAmount.value);
   if (
     accountForTransfer &&
     amount > 0 &&
@@ -130,8 +130,24 @@ btnTransfer.addEventListener("click", (ev) => {
     accountForTransfer.logIn !== selectedAccount.logIn
   ) {
     selectedAccount.movements.push(-amount);
-    accountForTransfer.movements.push(Number(amount));
+    accountForTransfer.movements.push(amount);
     inputTransferTo.value = inputTransferAmount.value = "";
     renderingUi(selectedAccount);
+  }
+});
+
+btnClose.addEventListener("click", (ev) => {
+  ev.preventDefault();
+  if (
+    inputCloseUsername.value == selectedAccount.logIn &&
+    inputClosePin.value == selectedAccount.pin
+  ) {
+    const index = accounts.findIndex(
+      (account) => account.logIn == selectedAccount.logIn
+    );
+    accounts.splice(index, 1);
+    inputCloseUsername.value = inputClosePin.value = "";
+    containerApp.style.opacity = "0";
+    console.log(accounts);
   }
 });
