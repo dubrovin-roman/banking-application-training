@@ -68,8 +68,6 @@ function renderingMovements(movements) {
   });
 }
 
-renderingMovements(account1.movements);
-
 function creatingLogIn(accounts) {
   accounts.forEach((val) => {
     val.logIn = val.owner
@@ -98,4 +96,19 @@ function renderingCurrentBalance(movements) {
   labelSumOut.innerHTML = `${summaryValueOut}₽`;
 }
 
-renderingCurrentBalance(account1.movements);
+let selectedAccount;
+btnLogin.addEventListener("click", (ev) => {
+  ev.preventDefault();
+  const inputUsername = inputLoginUsername.value;
+  const inputPIN = Number(inputLoginPin.value);
+  selectedAccount = accounts.find((account) => account.logIn === inputUsername);
+  if (selectedAccount && selectedAccount.pin === inputPIN) {
+    containerApp.style.opacity = "100";
+    inputLoginUsername.value = "";
+    inputLoginPin.value = "";
+    renderingMovements(selectedAccount.movements);
+    renderingCurrentBalance(selectedAccount.movements);
+  } else {
+    containerApp.style.opacity = "0";
+  }
+});
