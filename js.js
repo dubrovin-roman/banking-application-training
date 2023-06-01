@@ -2,25 +2,58 @@
 
 const account1 = {
   owner: "Dmitrii Fokeev",
-  movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
+  movements: [
+    [200, "2019-11-18T21:31:17.178Z"],
+    [450, "2019-12-23T07:42:02.383Z"],
+    [-400, "2020-01-28T09:15:04.904Z"],
+    [3000, "2020-04-01T10:17:24.185Z"],
+    [-650, "2020-05-08T14:11:59.604Z"],
+    [-130, "2020-05-27T17:01:17.194Z"],
+    [70, "2020-07-11T23:36:17.929Z"],
+    [1300, "2020-07-12T10:51:36.790Z"],
+  ],
   pin: 1111,
 };
 
 const account2 = {
   owner: "Anna Filimonova",
-  movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
+  movements: [
+    [5000, "2019-11-01T13:15:33.035Z"],
+    [3400, "2019-11-30T09:48:16.867Z"],
+    [-150, "2019-12-25T06:04:23.907Z"],
+    [-790, "2020-01-25T14:18:46.235Z"],
+    [-3210, "2020-02-05T16:33:06.386Z"],
+    [-1000, "2020-04-10T14:43:26.374Z"],
+    [8500, "2020-06-25T18:49:59.371Z"],
+    [-30, "2020-07-26T12:01:20.894Z"],
+  ],
   pin: 2222,
 };
 
 const account3 = {
   owner: "Polina Filimonova",
-  movements: [200, -200, 340, -300, -20, 50, 400, -460],
+  movements: [
+    [200, "2019-11-01T13:15:33.035Z"],
+    [-200, "2019-11-30T09:48:16.867Z"],
+    [340, "2019-12-25T06:04:23.907Z"],
+    [-300, "2020-01-25T14:18:46.235Z"],
+    [-20, "2020-02-05T16:33:06.386Z"],
+    [50, "2020-04-10T14:43:26.374Z"],
+    [400, "2020-06-25T18:49:59.371Z"],
+    [-460, "2020-07-26T12:01:20.894Z"],
+  ],
   pin: 3333,
 };
 
 const account4 = {
   owner: "Stanislav Ivanchenko",
-  movements: [430, 1000, 700, 50, 90],
+  movements: [
+    [430, "2019-11-01T13:15:33.035Z"],
+    [1000, "2019-11-30T09:48:16.867Z"],
+    [700, "2019-12-25T06:04:23.907Z"],
+    [50, "2020-01-25T14:18:46.235Z"],
+    [90, "2020-02-05T16:33:06.386Z"],
+  ],
   pin: 4444,
 };
 
@@ -52,6 +85,23 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
+function getDateInFormat(date) {
+  let tempDate;
+  if (date) {
+    tempDate = new Date(date);
+  } else {
+    tempDate = new Date();
+  }
+
+  const yearNow = tempDate.getFullYear();
+  const monthNow = `${tempDate.getMonth() + 1}`.padStart(2, 0);
+  const dayNow = `${tempDate.getDate()}`.padStart(2, 0);
+  const hoursNow = `${tempDate.getHours()}`.padStart(2, 0);
+  const minutesNow = `${tempDate.getMinutes()}`.padStart(2, 0);
+  const secondsNow = `${tempDate.getSeconds()}`.padStart(2, 0);
+  return `${dayNow}/${monthNow}/${yearNow} ${hoursNow}:${minutesNow}:${secondsNow}`;
+}
+
 function creatingLogIn(accounts) {
   accounts.forEach((val) => {
     val.logIn = val.owner
@@ -65,36 +115,39 @@ creatingLogIn(accounts);
 
 function renderingMovements(movements, isSorted = false) {
   containerMovements.innerHTML = "";
-  const movs = isSorted ? movements.slice().sort((a, b) => a - b) : movements;
+  const movs = isSorted
+    ? movements.slice().sort((a, b) => a[0] - b[0])
+    : movements;
   movs.forEach(function (val, i) {
-    const type = val > 0 ? "deposit" : "withdrawal";
-    const typeDesc = val > 0 ? "зачисление" : "снятие";
+    const type = val[0] > 0 ? "deposit" : "withdrawal";
+    const typeDesc = val[0] > 0 ? "зачисление" : "снятие";
     const element = `<div class="movements__row">
     <div class="movements__type movements__type--${type}">
       ${i + 1} ${typeDesc}
     </div>
-    <div class="movements__date">3 дня назад</div>
-    <div class="movements__value">${val}₽</div>
+    <div class="movements__date">${getDateInFormat(val[1])}</div>
+    <div class="movements__value">${val[0]}₽</div>
   </div>`;
     containerMovements.insertAdjacentHTML("afterbegin", element);
   });
 }
 
 function renderingCurrentBalance(account) {
-  account.balance = account.movements.reduce((acc, val) => acc + val);
+  account.balance = account.movements.reduce((acc, val) => acc + val[0], 0);
   let summaryValueIn = 0;
   let summaryValueOut = 0;
   account.movements.forEach((val) => {
-    if (val > 0) {
-      summaryValueIn += val;
+    if (val[0] > 0) {
+      summaryValueIn += val[0];
     } else {
-      summaryValueOut += -val;
+      summaryValueOut += -val[0];
     }
   });
   labelBalance.innerHTML = `${account.balance}₽`;
   labelSumInterest.innerHTML = `${account.balance}₽`;
   labelSumIn.innerHTML = `${summaryValueIn}₽`;
   labelSumOut.innerHTML = `${summaryValueOut}₽`;
+  labelDate.textContent = getDateInFormat();
 }
 
 function renderingUi(account) {
@@ -130,8 +183,8 @@ btnTransfer.addEventListener("click", (ev) => {
     selectedAccount.balance >= amount &&
     accountForTransfer.logIn !== selectedAccount.logIn
   ) {
-    selectedAccount.movements.push(-amount);
-    accountForTransfer.movements.push(amount);
+    selectedAccount.movements.push([-amount, new Date().toISOString()]);
+    accountForTransfer.movements.push([amount, new Date().toISOString()]);
     inputTransferTo.value = inputTransferAmount.value = "";
     renderingUi(selectedAccount);
   }
@@ -156,23 +209,15 @@ btnLoan.addEventListener("click", (ev) => {
   ev.preventDefault();
   const loanAmount = Number(inputLoanAmount.value);
   if (loanAmount > 0) {
-    selectedAccount.movements.push(loanAmount);
+    selectedAccount.movements.push([loanAmount, new Date().toISOString()]);
     inputLoanAmount.value = "";
     renderingUi(selectedAccount);
   }
 });
 
-const allBalance = accounts
-  .map((account) => account.movements)
-  .flat()
-  .reduce((acc, val) => acc + val, 0);
-
-console.log(allBalance);
-
 let sorted = false;
 btnSort.addEventListener("click", (ev) => {
   ev.preventDefault();
-  console.log("click");
   renderingMovements(selectedAccount.movements, !sorted);
   sorted = !sorted;
 });
