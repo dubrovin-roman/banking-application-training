@@ -6,11 +6,11 @@ const account1 = {
     [200, "2019-11-18T21:31:17.178Z"],
     [450, "2019-12-23T07:42:02.383Z"],
     [-400, "2020-01-28T09:15:04.904Z"],
-    [3000, "2020-04-01T10:17:24.185Z"],
-    [-650, "2020-05-08T14:11:59.604Z"],
-    [-130, "2020-05-27T17:01:17.194Z"],
-    [70, "2020-07-11T23:36:17.929Z"],
-    [1300, "2020-07-12T10:51:36.790Z"],
+    [3000, "2023-05-26T10:17:24.185Z"],
+    [-650, "2023-05-28T14:11:59.604Z"],
+    [-130, "2023-05-30T17:01:17.194Z"],
+    [70, "2023-05-31T23:36:17.929Z"],
+    [1300, "2023-06-01T10:51:36.790Z"],
   ],
   pin: 1111,
 };
@@ -86,12 +86,36 @@ const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
 function getDateInFormat(date) {
+  const local = navigator.language;
+  const options = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    weekday: "long",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    timeZoneName: "long",
+    hour12: false,
+  };
   let tempDate;
   if (date) {
     tempDate = new Date(date);
   } else {
     tempDate = new Date();
+    return Intl.DateTimeFormat(local, options).format(tempDate);
   }
+
+  const numberOfPastDays = Math.round(
+    (new Date() - tempDate) / (1000 * 60 * 60 * 24)
+  );
+
+  if (numberOfPastDays == 0) return "сегодня";
+  if (numberOfPastDays == 1) return "вчера";
+  if (numberOfPastDays >= 2 && numberOfPastDays <= 4)
+    return `${numberOfPastDays} дня назад`;
+  if (numberOfPastDays > 4 && numberOfPastDays <= 7)
+    return `${numberOfPastDays} дней назад`;
 
   const yearNow = tempDate.getFullYear();
   const monthNow = `${tempDate.getMonth() + 1}`.padStart(2, 0);
