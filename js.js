@@ -85,6 +85,26 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
+let timer;
+function creatTimer() {
+  let time = 600;
+
+  function timerActions() {
+    const minutes = String(Math.trunc(time / 60)).padStart(2, 0);
+    const seconds = String(time % 60).padStart(2, 0);
+    labelTimer.textContent = `${minutes} : ${seconds}`;
+    if (time == 0) {
+      containerApp.style.opacity = 0;
+      clearInterval(timer);
+    }
+    time--;
+  }
+
+  timerActions();
+
+  return setInterval(timerActions, 1000);
+}
+
 function getDateInFormat(date) {
   const local = navigator.language;
   const options = {
@@ -177,6 +197,12 @@ function renderingCurrentBalance(account) {
 function renderingUi(account) {
   renderingMovements(account.movements);
   renderingCurrentBalance(account);
+  if (timer) {
+    clearInterval(timer);
+    timer = creatTimer();
+  } else {
+    timer = creatTimer();
+  }
 }
 
 let selectedAccount;
